@@ -6,7 +6,7 @@ from PyQt5.QtGui import QPixmap,QColor,QPainter,QIcon
 class Canvas(QLabel):
     def __init__(self):
         super().__init__()
-        pixmap = QPixmap(600,300)
+        pixmap = QPixmap(280,280)
         pixmap.fill(Qt.white)
         self.setPixmap(pixmap)
 
@@ -30,13 +30,45 @@ class Canvas(QLabel):
         painter.end()
         self.update()
 
+    def mouseReleaseEvent(self, e):
+        self.last_x = None
+        self.last_y = None
+
     def imgSave(self):
 #        print(type(self.pixmap()))
         self.pixmap().save('test1.PNG')
 
+    def imgClear(self):
+        self.pixmap().fill(Qt.white)
+        self.update()
+
 class SaveButton(QPushButton):
     def __init__(self):
-        super().__init__(QIcon('./imgs/saveicon-white.png'),' Save')
+#        super().__init__(QIcon('./imgs/saveicon-white.png'),' Save')
+        super().__init__('Save')
+        button_stylesheet = ''' QPushButton {
+                            font-size: 24px;
+                            margin-left: auto;
+                            margin-right: auto;
+                            margin-bottom: 0;
+                            padding: 10px 12px;
+                            border: 1px solid transparent;
+                            border-radius: 5px;
+                            color: #fff;
+                            background-color: #007bff;
+                            border-color: #007bff;
+                            }
+                            QPushButton:hover {
+                            color: #fff;
+                            background-color: #0069d9;
+                            border-color: #0062cc;
+                            }
+                            '''
+        self.setStyleSheet(button_stylesheet)
+
+class ClearButton(QPushButton):
+    def __init__(self):
+        super().__init__('Clear')
         button_stylesheet = ''' QPushButton {
                             font-size: 24px;
                             margin-left: auto;
@@ -69,7 +101,13 @@ class MainWindow(QMainWindow):
 
         save_button = SaveButton()
         save_button.clicked.connect(self.canvas.imgSave)
-        vlayout.addWidget(save_button)
+        clear_button = ClearButton()
+        clear_button.clicked.connect(self.canvas.imgClear)
+
+        hlayout = QHBoxLayout()
+        hlayout.addWidget(save_button)
+        hlayout.addWidget(clear_button)
+        vlayout.addLayout(hlayout)
 
         self.setCentralWidget(widget_container)
 
